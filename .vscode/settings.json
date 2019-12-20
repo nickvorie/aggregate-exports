@@ -1,0 +1,21 @@
+{
+	"editor.formatOnSave": false,
+	"eslint.autoFixOnSave": true,
+	"eslint.validate": [
+		{
+			"language": "javascript",
+			"autoFix": true
+		},
+		{
+			"language": "typescript",
+			"autoFix": true
+		}
+	],
+	"html.format.indentHandlebars": true,
+	"html.format.indentInnerHtml": true,
+    "editor.detectIndentation": false,
+	"editor.insertSpaces": false,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	}
+}

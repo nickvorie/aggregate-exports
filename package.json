@@ -1,0 +1,54 @@
+{
+	"name": "find-exports",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/index.js",
+	"directories": {
+		"test": "test"
+	},
+	"scripts": {
+		"test": "npm run lint:check && jest --forceExit --verbose --maxWorkers=1",
+		"lint:check": "eslint \"**/*.ts\" \"**/*.js\"",
+		"lint:fix": "eslint --fix-dry-run \"**/*.ts\" \"**/*.js\"",
+		"build": "npm-run-all lint:fix build:clean build:ts",
+		"build:dist": "npm-run-all test build",
+		"build:clean": "rimraf dist",
+		"build:ts": "npm-run-all build:ts:compile build:ts:paths",
+		"build:ts:compile": "tsc",
+		"build:ts:paths": "tscpaths --project tsconfig.json -s src -o dist"
+	},
+	"author": "Nicholas Vorie",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/async": "^3.0.3",
+		"@types/commander": "^2.12.2",
+		"@types/glob": "^7.1.1",
+		"@types/jest": "^24.0.23",
+		"@types/lodash": "^4.14.149",
+		"@types/node": "^12.12.17",
+		"@typescript-eslint/eslint-plugin": "^2.11.0",
+		"@typescript-eslint/parser": "^2.11.0",
+		"eslint": "^6.1.0",
+		"eslint-config-airbnb": "^18.0.1",
+		"eslint-config-airbnb-base": "^14.0.0",
+		"eslint-plugin-import": "^2.19.1",
+		"eslint-plugin-jsx-a11y": "^6.2.3",
+		"eslint-plugin-react": "^7.17.0",
+		"eslint-plugin-react-hooks": "^1.7.0",
+		"jest": "^24.9.0",
+		"npm-run-all": "^4.1.5",
+		"rimraf": "^3.0.0",
+		"ts-jest": "^24.2.0",
+		"tscpaths": "0.0.9",
+		"typescript": "^3.7.3"
+	},
+	"files": [
+		"dist/**/*"
+	],
+	"dependencies": {
+		"async": "^3.1.0",
+		"commander": "^4.0.1",
+		"glob": "^7.1.6",
+		"lodash": "^4.17.15"
+	}
+}
