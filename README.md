@@ -47,6 +47,32 @@ Options:
   -g, --mode <single|directory>  generate a single export file or one per directory (default: "directory")
   -h, --help                     output usage information
 ```
+
+#### TypeScript path mapping
+
+aggregate-exports supports relative path mapping using a similar syntax to the tsconfig.json `compilerOptions.paths` propery. If your project doesn't use paths, you can ignore this setting. 
+
+Examples:
+
+`tsconfig.json`:
+
+```
+	"compilerOptions": {
+    "baseUrl": "src",
+    
+		"paths": {
+			"@/*": ["*"],
+			"@lib/*": ["*/lib"],
+		},
+  }
+```
+
+CLI options:
+
+```
+aggregate-exports generate -m @:,@lib:lib -b ./src "src/**/*.+(ts|js)"
+```
+
 ### Clean aggregate export files
 
 ```
