@@ -6,12 +6,14 @@ This build tool/utility is used to generate "aggregate export" files for large p
 I am currently in the process of wrapping up the final features and then distributing via NPM. Until then you can follow the directions to build the project yourself:
 
 1. Clone repo `git clone https://github.com/nickvorie/aggregate-exports.git`
-2. Install dependancies `npm install` (might take a few minutes to download all of the typescript dependancies)
-3. Build typescript to JS `npm run build:dist`
+2. Install dependancies `npm install` (might take a few minutes to download all of the TypeScript dependencies)
+3. Build TypeScript to JS `npm run build:dist`
 4. (optional) Link package with `npm link`
 5. Run with node dist/index.js <command> [options]
 
 ## Usage
+
+### General options (applies to all commands)
 
 ```
 aggregate-exports <command>
@@ -29,6 +31,8 @@ Commands:
   clean [pattern]               clean all generated export aggregation files
 ```
 
+### Generate aggregate exports
+
 ```
 aggregate-exports generate [options] <pattern>
 
@@ -43,6 +47,7 @@ Options:
   -g, --mode <single|directory>  generate a single export file or one per directory (default: "directory")
   -h, --help                     output usage information
 ```
+### Clean aggregate export files
 
 ```
 aggregate-exports clean [pattern]
@@ -52,11 +57,20 @@ clean all generated export aggregation files
 
 ## Examples
 
+### generate
+
 ```
-aggregate-exports generate -m @:,@lib:lib -v "src/**/*.ts"
+aggregate-exports generate -m @:,@lib:lib -v "src/**/*.+(ts|js)"
+```
+
+### clean
+
+```
+aggregate-exports clean -v "+(test|src)/**/*.ts"
 ```
 
 ## Limitations
 
 - Does not handle duplicate exports
+- Does not map default exports to file name
 - Only supports directory mode currently
