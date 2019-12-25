@@ -49,6 +49,8 @@ module.exports = {
   },
 
   rules: {
+	"no-console": "off",
+	"no-bitwise": "off",
     "quotes": ["error", "double"],
     "indent": "off",
     "no-tabs": ["off"],
