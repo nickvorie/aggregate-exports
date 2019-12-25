@@ -1,5 +1,5 @@
 {
-	"name": "find-exports",
+	"name": "aggregate-exports",
 	"version": "1.0.0",
 	"description": "",
 	"main": "dist/index.js",
@@ -7,14 +7,14 @@
 		"test": "test"
 	},
 	"scripts": {
-		"test": "npm run lint:check && jest --forceExit --verbose --maxWorkers=1",
+		"test": "npm run lint:check && jest --detectOpenHandles --maxWorkers=1 -t",
 		"lint:check": "eslint \"**/*.ts\" \"**/*.js\"",
 		"lint:fix": "eslint --fix-dry-run \"**/*.ts\" \"**/*.js\"",
-		"build": "npm-run-all lint:fix build:clean build:ts",
+		"build": "npm-run-all lint:check build:clean build:ts",
 		"build:dist": "npm-run-all test build",
 		"build:clean": "rimraf dist",
 		"build:ts": "npm-run-all build:ts:compile build:ts:paths",
-		"build:ts:compile": "tsc",
+		"build:ts:compile": "tsc --p tsconfig.dist.json",
 		"build:ts:paths": "tscpaths --project tsconfig.json -s src -o dist"
 	},
 	"author": "Nicholas Vorie",
@@ -39,8 +39,7 @@
 		"npm-run-all": "^4.1.5",
 		"rimraf": "^3.0.0",
 		"ts-jest": "^24.2.0",
-		"tscpaths": "0.0.9",
-		"typescript": "^3.7.3"
+		"tscpaths": "0.0.9"
 	},
 	"files": [
 		"dist/**/*"
@@ -49,6 +48,7 @@
 		"async": "^3.1.0",
 		"commander": "^4.0.1",
 		"glob": "^7.1.6",
-		"lodash": "^4.17.15"
+		"lodash": "^4.17.15",
+		"typescript": "^3.7.4"
 	}
 }
