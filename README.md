@@ -57,14 +57,14 @@ Examples:
 `tsconfig.json`:
 
 ```
-	"compilerOptions": {
-    "baseUrl": "src",
-    
-		"paths": {
-			"@/*": ["*"],
-			"@lib/*": ["*/lib"],
-		},
-  }
+"compilerOptions": {
+	"baseUrl": "src",
+	
+	"paths": {
+		"@/*": ["*"],
+		"@lib/*": ["*/lib"],
+	},
+}
 ```
 
 CLI options:
@@ -85,9 +85,25 @@ clean all generated export aggregation files
 
 ### generate
 
+Command:
+
 ```
-aggregate-exports generate -m @:,@lib:lib -v "src/**/*.+(ts|js)"
+aggregate-exports generate -m @: -o index.ts -v "src/lib/util/ast/*.ts"
 ```
+
+Example output:
+
+`src/lib/util/ast/index.ts`:
+
+```
+/* aggregate-export */
+/* eslint-disable */
+export { generateAggregatedExports, isDefaultExport, getExportedIdentifiers } from "@/lib/util/ast/exports";
+export { hasModifier } from "@/lib/util/ast/modifier";
+export { nodeToString } from "@/lib/util/ast/print";
+export { getName } from "@/lib/util/ast/syntaxKind";
+```
+
 
 ### clean
 
