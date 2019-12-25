@@ -1,73 +1,87 @@
-/* eslint-disable consistent-return */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-console */
 import program from "commander";
+import _ from "lodash";
 
-import { Options } from "@/options";
+import { generate, options as generateOptions } from "@/commands/generate";
+import { clean, options as cleanOptions } from "@/commands/clean";
 
-import { search } from "@/lib//util/search";
-import { parseFiles } from "@/lib/util/parser";
-
-import { File } from "@/lib/impl/File";
+import { OutputFileMode } from "@/modes";
 
 const packageJson = require("../package.json");
 
-program.requiredOption("-p, --pattern <glob>", "a glob to search for");
+program.version(packageJson.version);
 
-program.option("-r, --root <path>", "root path to resolve from", process.cwd());
+program.option("-r, --root <path>", "root path to run in", process.cwd());
+program.option("-f, --files <number>", "number of files to process at once", 50);
+program.option("-d, --dry-run", "don't modify any files, only write to console", false);
+
 program.option("-v, --verbose", "run in verbose mode", false);
 
-program.option("-f, --files <number>", "number of files to parse at once", 50);
+program.command("generate <pattern>")
+	.description("generate aggregate exports for files specified by a glob pattern")
+	.option("-b, --base <folder>", "base folder for resolving path mappings", "./src")
+	.option("-m, --mappings <mapping:path>", "comma seperated list of path mappings", "")
+	.option("-s, --strip-extention", "strip file extention when generating export statement", true)
+	.option("-o, --output <file_name>", "export file to generate", "exports.ts")
+	.option("-i, --ignore-warnings", "ignore warnings about overwriting existing files", false)
+	.option("-g, --mode <single|directory>", "generate a single export file or one per directory", OutputFileMode.DIRECTORY)
+	.action((pattern, command) => {
+		const options: generateOptions = {
+			pattern,
+			root: program.root,
+			base: command.base,
+			dryRun: program.dryRun,
+			stripExtention: command.stripExtention,
 
-program.option("-p, --prefix <string>", "relative path prefix for imports", "");
+			parse: {
+				files: program.files,
+			},
 
-program.option("-m, --map", "generate an object that maps the imports to camelCase");
-program.option("--map-path", "map folders by path", false);
-program.option("--map-path-start <number>", "path index to start mapping at", 2);
-program.option("--map-path-max <number>", "max number of paths to include while mapping", 1);
-program.option("--map-replace <regex>", "a regex to remove parts of the export name when mapping");
+			output: {
+				mode: command.mode as OutputFileMode,
+				file: command.output,
+				ignoreWarnings: command.ignoreWarnings,
+			},
 
+			verbose: program.verbose,
+		};
+
+		if (command.mappings) {
+			options.mappings = {};
+
+			command.mappings.split(",").forEach((mappingString: string) => {
+				const split = mappingString.split(":");
+
+				options.mappings[split[0]] = {
+					path: split[1],
+				};
+			});
+		}
+
+		startup(options);
+		generate(options);
+	});
+
+program.command("clean [pattern]").description("clean all generated export aggregation files")
+	.action((pattern) => {
+		const options: cleanOptions = {
+			pattern: pattern || "**/*.+(ts|js)",
+			root: program.root,
+			files: program.files,
+			dryRun: program.dryRun,
+
+			verbose: program.verbose,
+		};
+
+		startup(options);
+		clean(options);
+	});
 
 program.parse(process.argv);
 
-const options: Options = {
-	pattern: program.pattern,
-	root: program.root,
-
-	parse: {
-		files: program.files,
-	},
-
-	verbose: program.verbose,
-};
-
-if (program.map) {
-	options.map = {
-		path: program.mapPath,
-	};
-}
-
-if (options.verbose) {
-	console.log(`${packageJson.name} v${packageJson.version} is starting with options:`, options);
-}
-
-search(options.pattern, options.root).then((paths) => {
-	console.log(`found ${paths.length} files matching "${options.pattern}" in directory "${options.root}"`);
-
-	if (!paths.length) {
-		return onError("searching")(new Error("no files found"));
+function startup(options: object) {
+	if (program.verbose) {
+		console.log(`${packageJson.name} v${packageJson.version} is starting with options:`, options);
 	}
-
-	parseFiles(paths, options.parse.files).then((files: File[]) => {
-		files.forEach((file) => {
-			console.log(file.absolutePath, file.exports.map((exp) => exp.identifier));
-		});
-	}).catch(onError("parsing"));
-}).catch(onError("searching"));
-
-function onError(when: string) {
-	return (error: Error) => {
-		console.error(`error while ${when}:`, error.message);
-		console.log("exiting...");
-	};
 }
