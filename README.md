@@ -32,13 +32,19 @@ Options:
   -o, --output <file_name>       export file to generate (default: "exports.ts")
   -i, --ignore-warnings          ignore warnings about overwriting existing files (default: false)
   -g, --mode <single|directory>  generate a single export file or one per directory (default: "directory")
-  -h, --help                     output usage information             clean all generated export aggregation files
+  -h, --help                     output usage information
 ```
 
 ```
 aggregate-exports clean [pattern]
 
 clean all generated export aggregation files
+```
+
+## Examples
+
+```
+aggregate-exports generate -m @:,@lib:lib -v "src/**/*.ts"
 ```
 
 ## Limitations
