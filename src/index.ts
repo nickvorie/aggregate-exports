@@ -20,8 +20,8 @@ program.version(packageJson.version);
 program.command("generate <pattern>")
 	.description("generate aggregate exports for files specified by a glob pattern")
 	.option("-b, --base <folder>", "base folder for resolving path mappings", "./src")
-	.option("-m, --mappings <mapping:path>", "comma seperated list of path mappings", "")
-	.option("-s, --strip-extention", "strip file extention when generating export statement", true)
+	.option("-m, --mappings <mapping:path>", "comma separated list of path mappings", "")
+	.option("-s, --strip-extension", "strip file extension when generating export statement", true)
 	.option("-o, --output <file_name>", "export file to generate", "exports.ts")
 	.option("-i, --ignore-warnings", "ignore warnings about overwriting existing files", false)
 	.option("-g, --mode <single|directory>", "generate a single export file or one per directory", OutputMode.DIRECTORY)
@@ -44,7 +44,7 @@ program.command("generate <pattern>")
 
 				file: command.output,
 				ignoreWarnings: command.ignoreWarnings,
-				stripExtention: command.stripExtention,
+				stripExtension: command.stripExtension,
 			},
 
 			verbose: program.verbose,

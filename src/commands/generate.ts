@@ -37,7 +37,7 @@ export type options = {
 
 		file: string;
 		ignoreWarnings: boolean;
-		stripExtention: boolean;
+		stripExtension: boolean;
 	}
 };
 
@@ -46,7 +46,7 @@ export async function generate(options: options) {
 
 	try {
 		// Create a new PathResolver from the options passed
-		const resolver = new PathResolver(options.root, options.base, options.mappings, options.output.stripExtention);
+		const resolver = new PathResolver(options.root, options.base, options.mappings, options.output.stripExtension);
 
 		if (options.verbose) {
 			console.log("resolver", resolver);

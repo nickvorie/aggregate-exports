@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import path from "path";
 
-import { stripExtention } from "@/lib/util/paths";
+import { stripExtention as stripExtension } from "@/lib/util/paths";
 
 export type mapping = {
 	path: string;
@@ -79,8 +79,8 @@ export class PathResolver {
 		}
 
 		if (this.stripExtention) {
-			relativePath = stripExtention(relativePath);
-			mappedPath = stripExtention(mappedPath);
+			relativePath = stripExtension(relativePath);
+			mappedPath = stripExtension(mappedPath);
 		}
 
 		return { source: relativePath, mapped: mappedPath };
