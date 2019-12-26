@@ -18,15 +18,16 @@ function tokenizePath(base: string, mapPath: string): string[] {
 	return path.relative(base, path.join(base, mapPath)).split(path.sep).filter((part) => part);
 }
 
-export class Paths {
+export class PathResolver {
 	public root: string;
 	public base: string;
 
 	public mappings: mappings;
 	public stripExtention: boolean;
 
-	constructor(root: string, base: string, mappings?: mappings) {
+	constructor(root: string, base: string, mappings?: mappings, stripExtention?: boolean) {
 		this.mappings = mappings;
+		this.stripExtention = stripExtention;
 
 		if (mappings) {
 			Object.keys(this.mappings).forEach((m) => {

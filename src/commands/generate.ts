@@ -9,7 +9,7 @@ import { timer } from "@/lib/util/timer";
 import { search } from "@/lib/util/search";
 import { parseFiles } from "@/lib/util/parser";
 
-import { Paths, mappings } from "@/lib/paths";
+import { PathResolver, mappings } from "@/lib/PathResolver";
 import { OutputFileMode } from "@/modes";
 import { isExportFile, exportFileComment } from "@/lib/util/util";
 
@@ -40,7 +40,7 @@ export async function generate(options: options) {
 	timer.start("run");
 
 	try {
-		const resolver = new Paths(options.root, options.base, options.mappings);
+		const resolver = new PathResolver(options.root, options.base, options.mappings, options.stripExtention);
 
 		if (options.verbose) {
 			console.log("resolver", resolver);
@@ -77,7 +77,7 @@ export async function generate(options: options) {
 		if (options.output.mode === OutputFileMode.SINGLE) {
 			// TODO implement single-file mode
 		} else if (options.output.mode === OutputFileMode.DIRECTORY) {
-			const grouped = Paths.groupByDirectory(filePaths);
+			const grouped = PathResolver.groupByDirectory(filePaths);
 
 			await async.forEach(Object.keys(grouped), async (directory) => {
 				const groupedFiles = files.filter((file) => grouped[directory].includes(file.absolutePath));

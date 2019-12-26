@@ -1,7 +1,7 @@
 import { Node, Identifier } from "typescript";
 import path from "path";
 
-import { Paths } from "@/lib/paths";
+import { PathResolver } from "@/lib/PathResolver";
 import { generateAggregatedExports } from "@/lib/util/ast/exports";
 import { nodeToString } from "@/lib/util/ast/print";
 
@@ -14,7 +14,7 @@ export class File {
 		this.exports = exports;
 	}
 
-	public getExportNode(resolver: Paths, from?: string): Node {
+	public getExportNode(resolver: PathResolver, from?: string): Node {
 		const mapped = resolver.getMappedPath(this.absolutePath, from);
 		let mappedPath = mapped.source;
 
@@ -25,7 +25,7 @@ export class File {
 		return generateAggregatedExports(mappedPath, this.exports);
 	}
 
-	public getExportString(resolver: Paths): string {
+	public getExportString(resolver: PathResolver): string {
 		return nodeToString(this.getExportNode(resolver));
 	}
 }
