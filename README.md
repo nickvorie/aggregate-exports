@@ -13,7 +13,7 @@ This build tool/utility is used to generate "aggregate export" files for large p
 
 ## Limitations
 - Does not handle duplicate exports
-- Only supports directory mode currently
+- ~~Only supports directory mode currently~~
 - Only supports path mapping, identifier mapping coming soon
 
 ## Installation
