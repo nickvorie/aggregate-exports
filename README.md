@@ -3,7 +3,7 @@ This build tool/utility is used to generate "aggregate export" files for large p
 
 ## Roadmap
 - Finish writing tests 
-- Support single file output mode
+- [~~Support single file output mode~~](https://github.com/nickvorie/aggregate-exports/commit/159202959ec81e549c6566c29de161ddbc5512fd)
 - Improve CLI documentation and include better examples of use-cases
 - Write API documentation for programmatic use
 - Document the code with proper JSDocs
@@ -13,7 +13,7 @@ This build tool/utility is used to generate "aggregate export" files for large p
 
 ## Limitations
 - Does not handle duplicate exports
-- Only supports directory mode currently
+- ~~Only supports directory mode currently~~
 - Only supports path mapping, identifier mapping coming soon
 
 ## Installation
