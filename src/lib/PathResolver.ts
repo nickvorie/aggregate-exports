@@ -1,4 +1,7 @@
+/* eslint-disable no-shadow */
 import path from "path";
+
+import { stripExtention } from "@/lib/util/paths";
 
 export type mapping = {
 	path: string;
@@ -39,62 +42,40 @@ export class PathResolver {
 		this.base = path.normalize(path.join(root, base));
 	}
 
-	static stripExtention(file: string) {
-		const extention = path.parse(file).ext;
-
-		if (extention) {
-			return file.substring(0, file.length - extention.length);
-		}
-
-		return file;
-	}
-
-	static groupByDirectory(files: string[]) {
-		const grouped: {[index: string]: string[]} = {};
-
-		files.forEach((file) => {
-			const { dir } = path.parse(file);
-			const group = grouped[dir];
-
-			if (group) {
-				group.push(file);
-			} else {
-				grouped[dir] = [file];
-			}
-		});
-
-		return grouped;
-	}
-
 	// TODO use ts.resolveModuleName
 	public getMappedPath(file: string, from?: string): mappedPath {
 		let relativePath = path.relative(from || this.base, file);
+		let mappedPathTokens: string[] = [];
 
 		if (!relativePath.length) {
 			relativePath = "./";
 		}
 
-		let mapped: string[] = [];
-
 		if (this.mappings) {
 			const splitRelativePath = path.relative(this.base, file).split(path.sep);
-			let mapping: mapping;
 
 			Object.keys(this.mappings).forEach((m) => {
-				mapping = this.mappings[m];
+				const mapping = this.mappings[m];
 				const mappingTest = splitRelativePath.filter((dir, index) => mapping.tokenized[index] === dir);
 
 				if (!(mappingTest.length || mapping.tokenized.length) || mappingTest.length === mapping.tokenized.length) {
 					const newPathTest = [m].concat(splitRelativePath.slice(mappingTest.length));
 
-					if (!mapped.length || newPathTest.length <= mapped.length) {
-						mapped = newPathTest;
+					if (!mappedPathTokens.length || newPathTest.length <= mappedPathTokens.length) {
+						mappedPathTokens = newPathTest;
 					}
 				}
 			});
 		}
 
-		return { source: relativePath, mapped: mapped.join(path.sep) };
+		let mappedPath = mappedPathTokens.join(path.sep);
+
+		if (this.stripExtention) {
+			relativePath = stripExtention(relativePath);
+			mappedPath = stripExtention(mappedPath);
+		}
+
+		return { source: relativePath, mapped: mappedPath };
 	}
 
 	public getMappedPaths(files: string[], from?: string): mappedPath[] {

@@ -7,6 +7,7 @@ import { promisify } from "util";
 
 import { timer } from "@/lib/util/timer";
 import { search } from "@/lib/util/search";
+import { groupByDirectory } from "@/lib/util/paths";
 import { parseFiles } from "@/lib/util/parser";
 
 import { PathResolver, mappings } from "@/lib/PathResolver";
@@ -77,7 +78,7 @@ export async function generate(options: options) {
 		if (options.output.mode === OutputFileMode.SINGLE) {
 			// TODO implement single-file mode
 		} else if (options.output.mode === OutputFileMode.DIRECTORY) {
-			const grouped = PathResolver.groupByDirectory(filePaths);
+			const grouped = groupByDirectory(filePaths);
 
 			await async.forEach(Object.keys(grouped), async (directory) => {
 				const groupedFiles = files.filter((file) => grouped[directory].includes(file.absolutePath));
