@@ -9,8 +9,16 @@ const precisions: {[index: string]: bigint} = {
 
 const labels: {[label: string]: bigint} = {};
 
-export function start(label = "") {
-	labels[label] = process.hrtime.bigint();
+export function start(label = ""): string {
+	let newLabel = label;
+	const existingTimer = labels[newLabel];
+
+	if (existingTimer) {
+		newLabel = `${label}.${Math.random()}`;
+	}
+
+	labels[newLabel] = process.hrtime.bigint();
+	return newLabel;
 }
 
 export function end(label = "", precision: string = "ms"): number {

@@ -22,16 +22,23 @@ import ts, {
 
 import { hasModifier } from "@/lib/util/ast/modifier";
 
-// export function exportString()
+export type IdentifierOrTuple = string | Identifier | [string | Identifier, string | Identifier];
 
-export function generateAggregatedExports(module: string, identifiers?: Identifier[]): ExportDeclaration | ExportAssignment {
+export function generateAggregatedExports(module: string, identifiers?: IdentifierOrTuple[]): ExportDeclaration {
 	const moduleSpecifier = createStringLiteral(module);
 
 	if (!identifiers) {
 		return createExportDeclaration([], [], null, moduleSpecifier);
 	}
 
-	const elements = identifiers.map((identifier) => createExportSpecifier(null, identifier));
+	const elements = identifiers.map((identifier) => {
+		if (Array.isArray(identifier)) {
+			return createExportSpecifier(identifier[0], identifier[1]);
+		}
+
+		return createExportSpecifier(null, identifier);
+	});
+
 	const namedExports = createNamedExports(elements);
 
 	return createExportDeclaration([], [], namedExports, moduleSpecifier);

@@ -12,3 +12,6 @@ export async function isExportFile(file: string): Promise<boolean> {
 		resolve(!!line.match(exportFileCommentRegex));
 	});
 }
+
+
+export const start = "";

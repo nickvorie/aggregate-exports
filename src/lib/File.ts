@@ -2,14 +2,14 @@ import { Node, Identifier } from "typescript";
 import path from "path";
 
 import { PathResolver } from "@/lib/PathResolver";
-import { generateAggregatedExports } from "@/lib/util/ast/exports";
+import { generateAggregatedExports, IdentifierOrTuple } from "@/lib/util/ast/exports";
 import { nodeToString } from "@/lib/util/ast/print";
 
 export class File {
 	public readonly absolutePath: string;
-	public exports: Identifier[];
+	public exports: IdentifierOrTuple[];
 
-	constructor(absolutePath: string, exports: Identifier[]) {
+	constructor(absolutePath: string, exports: IdentifierOrTuple[]) {
 		this.absolutePath = absolutePath;
 		this.exports = exports;
 	}

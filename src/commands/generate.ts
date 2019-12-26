@@ -3,7 +3,9 @@
 import path from "path";
 import async from "async";
 import fs from "fs";
+import _ from "lodash";
 import { promisify } from "util";
+import { Identifier } from "typescript";
 
 import { timer } from "@/lib/util/timer";
 import { search } from "@/lib/util/search";
@@ -11,8 +13,9 @@ import { groupByDirectory, parentDir } from "@/lib/util/paths";
 import { parseFiles } from "@/lib/util/parser";
 
 import { PathResolver, mappings } from "@/lib/PathResolver";
-import { OutputMode } from "@/modes";
+import { OutputMode, DuplicateMode } from "@/modes";
 import { isExportFile, exportFileComment, eslintComment } from "@/lib/util/util";
+import { processFiles } from "@/lib/util/processor";
 
 export type options = {
 	pattern: string;
@@ -29,18 +32,20 @@ export type options = {
 	mappings?: mappings;
 
 	output: {
-		mode: OutputMode;
+		outputMode: OutputMode;
+		duplicateMode: DuplicateMode;
+
 		file: string;
 		ignoreWarnings: boolean;
 		stripExtention: boolean;
 	}
 };
 
-
 export async function generate(options: options) {
 	timer.start("run");
 
 	try {
+		// Create a new PathResolver from the options passed
 		const resolver = new PathResolver(options.root, options.base, options.mappings, options.output.stripExtention);
 
 		if (options.verbose) {
@@ -49,6 +54,7 @@ export async function generate(options: options) {
 
 		timer.start("search");
 
+		// Get a list of files to target from a Glob pattern
 		const filePaths = await search(options.pattern, options.root);
 
 		if (options.verbose) {
@@ -61,6 +67,7 @@ export async function generate(options: options) {
 
 		timer.start("parse");
 
+		// Parse the file paths into File instances with thier exported members
 		const files = await parseFiles(filePaths, options.parse.files);
 
 		if (options.verbose) {
@@ -72,34 +79,57 @@ export async function generate(options: options) {
 		}
 
 		let generatedFiles = 0;
-
 		timer.start("generate");
 
-		if (options.output.mode === OutputMode.SINGLE) {
+		if (options.output.outputMode === OutputMode.SINGLE) {
 			// Generate one aggregated export file for all target files
+
+			// Resolve the output files path
 			const outputFilePath = path.join(resolver.base, options.output.file);
 
 			// Navigate one step up in the file tree due to the last file path segment being the output file
 			const from = parentDir(outputFilePath);
 
-			const exports = files.map((file) => file.getExportString(resolver, from));
-			const result = await writeExportFile(outputFilePath, exports);
+			// Pre-process the files before generating the exports to handle any duplicate Identifiers
+			processFiles(files, {
+				duplicateMode: options.output.duplicateMode,
+				verbose: options.verbose,
+			});
+
+			// Combine the files exports
+			const exportStrings: string[] = files.map((file) => file.getExportString(resolver, from));
+
+			// Write file to disk
+			const result = await writeExportFile(outputFilePath, exportStrings);
 
 			if (result) {
 				generatedFiles++;
 			}
-		} else if (options.output.mode === OutputMode.DIRECTORY) {
+		} else if (options.output.outputMode === OutputMode.DIRECTORY) {
 			// Generate one aggregated export file for each directory containing target files
+
+			// Group the target files by directory
 			const grouped = groupByDirectory(filePaths);
 
+			// Iterate over each group of files
 			await async.forEach(Object.keys(grouped), async (directory) => {
+				// Filter empty files
 				const groupedFiles = files.filter((file) => grouped[directory].includes(file.absolutePath));
 
 				if (!groupedFiles.length) {
 					return;
 				}
 
+				// Pre-process the files before generating the exports to handle any duplicate Identifiers
+				processFiles(groupedFiles, {
+					duplicateMode: options.output.duplicateMode,
+					verbose: options.verbose,
+				});
+
+				// Combine the files exports
 				const exports = groupedFiles.map((file) => file.getExportString(resolver, directory));
+
+				// Write to disk
 				const result = await writeExportFile(path.join(directory, options.output.file), exports);
 
 				if (result) {
@@ -107,7 +137,7 @@ export async function generate(options: options) {
 				}
 			});
 		} else {
-			throw new Error(`invalid mode: ${options.output.mode}`);
+			throw new Error(`invalid mode: ${options.output.outputMode}`);
 		}
 
 		if (options.verbose) {
