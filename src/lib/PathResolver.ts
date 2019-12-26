@@ -43,7 +43,7 @@ export class PathResolver {
 	}
 
 	// TODO use ts.resolveModuleName
-	public getMappedPath(file: string, from?: string): mappedPath {
+	public resolvePath(file: string, from?: string): mappedPath {
 		let relativePath = path.relative(from || this.base, file);
 		let mappedPathTokens: string[] = [];
 
@@ -70,15 +70,30 @@ export class PathResolver {
 
 		let mappedPath = mappedPathTokens.join(path.sep);
 
+		/**
+		 * Preappend ./ to relative file paths that don't have a parent or
+		 * current directory token to avoid referring to system or installed modules
+		 */
+		if (!relativePath.startsWith(".")) {
+			relativePath = `.${path.sep}${relativePath}`;
+		}
+
 		if (this.stripExtention) {
 			relativePath = stripExtention(relativePath);
 			mappedPath = stripExtention(mappedPath);
 		}
 
+		console.log({
+			file,
+			from,
+			relativePath,
+			mappedPath,
+		});
+
 		return { source: relativePath, mapped: mappedPath };
 	}
 
 	public getMappedPaths(files: string[], from?: string): mappedPath[] {
-		return files.map((file) => this.getMappedPath(file, from));
+		return files.map((file) => this.resolvePath(file, from));
 	}
 }

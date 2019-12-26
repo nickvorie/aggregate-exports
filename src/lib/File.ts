@@ -15,17 +15,17 @@ export class File {
 	}
 
 	public getExportNode(resolver: PathResolver, from?: string): Node {
-		const mapped = resolver.getMappedPath(this.absolutePath, from);
-		let mappedPath = mapped.source;
+		const resolved = resolver.resolvePath(this.absolutePath, from);
+		let mappedPath = resolved.source;
 
-		if (mapped.source.length) {
-			mappedPath = mapped.mapped;
+		if (resolved.mapped.length) {
+			mappedPath = resolved.mapped;
 		}
 
 		return generateAggregatedExports(mappedPath, this.exports);
 	}
 
-	public getExportString(resolver: PathResolver): string {
-		return nodeToString(this.getExportNode(resolver));
+	public getExportString(resolver: PathResolver, from?: string): string {
+		return nodeToString(this.getExportNode(resolver, from));
 	}
 }

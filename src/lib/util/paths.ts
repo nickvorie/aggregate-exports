@@ -10,6 +10,10 @@ export function stripExtention(file: string): string {
 	return file.substring(0, file.length - extention.length);
 }
 
+export function parentDir(file: string, levels: number = 1): string {
+	return path.join(file, "../".repeat(levels));
+}
+
 export function groupByDirectory(paths: string[]) {
 	const groupedPaths: {[index: string]: string[]} = {};
 
