@@ -11,7 +11,7 @@ import { groupByDirectory, parentDir } from "@/lib/util/paths";
 import { parseFiles } from "@/lib/util/parser";
 
 import { PathResolver, mappings } from "@/lib/PathResolver";
-import { OutputFileMode } from "@/modes";
+import { OutputMode } from "@/modes";
 import { isExportFile, exportFileComment, eslintComment } from "@/lib/util/util";
 
 export type options = {
@@ -29,7 +29,7 @@ export type options = {
 	mappings?: mappings;
 
 	output: {
-		mode: OutputFileMode;
+		mode: OutputMode;
 		file: string;
 		ignoreWarnings: boolean;
 		stripExtention: boolean;
@@ -75,7 +75,7 @@ export async function generate(options: options) {
 
 		timer.start("generate");
 
-		if (options.output.mode === OutputFileMode.SINGLE) {
+		if (options.output.mode === OutputMode.SINGLE) {
 			// Generate one aggregated export file for all target files
 			const outputFilePath = path.join(resolver.base, options.output.file);
 
@@ -88,7 +88,7 @@ export async function generate(options: options) {
 			if (result) {
 				generatedFiles++;
 			}
-		} else if (options.output.mode === OutputFileMode.DIRECTORY) {
+		} else if (options.output.mode === OutputMode.DIRECTORY) {
 			// Generate one aggregated export file for each directory containing target files
 			const grouped = groupByDirectory(filePaths);
 

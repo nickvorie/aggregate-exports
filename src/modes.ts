@@ -1,10 +1,4 @@
-export enum OutputFileMode {
+export enum OutputMode {
 	SINGLE = "single",
 	DIRECTORY = "directory"
-}
-
-export enum PathMode {
-	RELATIVE = "relative",
-	ABSOLUTE = "absolute",
-	MAPPED = "mapped",
 }

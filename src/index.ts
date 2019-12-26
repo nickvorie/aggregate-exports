@@ -6,7 +6,7 @@ import _ from "lodash";
 import { generate, options as generateOptions } from "@/commands/generate";
 import { clean, options as cleanOptions } from "@/commands/clean";
 
-import { OutputFileMode } from "@/modes";
+import { OutputMode } from "@/modes";
 
 const packageJson = require("../package.json");
 
@@ -24,7 +24,7 @@ program.command("generate <pattern>")
 	.option("-s, --strip-extention", "strip file extention when generating export statement", true)
 	.option("-o, --output <file_name>", "export file to generate", "exports.ts")
 	.option("-i, --ignore-warnings", "ignore warnings about overwriting existing files", false)
-	.option("-g, --mode <single|directory>", "generate a single export file or one per directory", OutputFileMode.DIRECTORY)
+	.option("-g, --mode <single|directory>", "generate a single export file or one per directory", OutputMode.DIRECTORY)
 	.action((pattern, command) => {
 		const options: generateOptions = {
 			pattern,
@@ -37,7 +37,7 @@ program.command("generate <pattern>")
 			},
 
 			output: {
-				mode: command.mode as OutputFileMode,
+				mode: command.mode as OutputMode,
 				file: command.output,
 				ignoreWarnings: command.ignoreWarnings,
 				stripExtention: command.stripExtention,
