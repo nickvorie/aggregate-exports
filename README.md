@@ -3,6 +3,7 @@ This build tool/utility is used to generate "aggregate export" files for large p
 
 ## Roadmap
 - Finish writing tests 
+- [~~Support duplicate exports~~](https://github.com/nickvorie/aggregate-exports/commit/f925454a8182ec1767d65dc063f5a5ee8123d632)
 - [~~Support single file output mode~~](https://github.com/nickvorie/aggregate-exports/commit/159202959ec81e549c6566c29de161ddbc5512fd)
 - Improve CLI documentation and include better examples of use-cases
 - Write API documentation for programmatic use
@@ -12,7 +13,7 @@ This build tool/utility is used to generate "aggregate export" files for large p
 - Add the ability for export identifier mapping/filtering/grouping
 
 ## Limitations
-- Does not handle duplicate exports
+- ~~Does not handle duplicate exports~~
 - ~~Only supports directory mode currently~~
 - Only supports path mapping, identifier mapping coming soon
 
@@ -53,18 +54,30 @@ aggregate-exports generate [options] <pattern>
 
 generate aggregate exports for files specified by a glob pattern
 
-Options:
-  -b, --base <folder>            base folder for resolving path mappings (default: "./src")
-  -m, --mappings <mapping:path>  comma separated list of path mappings (default: "")
-  -s, --strip-extention          strip file extension when generating export statement (default: true)
-  -o, --output <file_name>       export file to generate (default: "exports.ts")
-  -i, --ignore-warnings          ignore warnings about overwriting existing files (default: false)
-  -g, --mode <single|directory>  generate a single export file or one per directory (default: "directory")
-  -h, --help                     output usage information
+  -b, --base <folder>                                      base folder for resolving path mappings (default: "./src")
+  -m, --mappings <mapping:path>                            comma separated list of path mappings (default: "")
+  -s, --strip-extension                                    strip file extension when generating export statement (default: true)
+  -o, --output <file_name>                                 export file to generate (default: "exports.ts")
+  -i, --ignore-warnings                                    ignore warnings about overwriting existing files (default: false)
+  -g, --mode <single|directory>                            generate a single export file or one per directory (default: "directory")
+  -D, --duplicate-mode <rename_parent|rename_seq|exclude>  set the behavior for handling duplicate export identifiers (default: 
+                                                           "rename_parent")
+  -h, --help                                               output usage information
 ```
 
-#### TypeScript path mapping
+### Duplicate export identifiers
+aggregate-exports fully supports handling duplicate export identifiers with the `--duplicate-mode` option (alias: `-D`). There are currently 3 modes:
 
+- `rename_parent` (**DEFAULT**) - rename exported member by appending the parent module's name to the end duplicate identifier
+... `run` => `runTimer`..
+
+- `rename_seq` - rename exported member by appending the current number of matching duplicates to the end of the duplicate identifier)
+... `run` => `run1`..
+
+- `exclude` - simply exclude the duplicate member from being exported
+... `run` => `undefined`
+
+#### TypeScript path mapping
 aggregate-exports supports relative path mapping using a similar syntax to the `tsconfig.json`'s `compilerOptions.paths` property. If your project doesn't use paths, you can ignore this setting. 
 
 Examples:
@@ -128,11 +141,8 @@ export { nodeToString } from "@/lib/util/ast/print";
 export { getName } from "@/lib/util/ast/syntaxKind";
 ```
 
-
 ### clean
 
 ```
 aggregate-exports clean -v "+(test|src)/**/*.ts"
 ```
-
-
