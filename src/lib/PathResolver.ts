@@ -83,13 +83,6 @@ export class PathResolver {
 			mappedPath = stripExtention(mappedPath);
 		}
 
-		console.log({
-			file,
-			from,
-			relativePath,
-			mappedPath,
-		});
-
 		return { source: relativePath, mapped: mappedPath };
 	}
 
