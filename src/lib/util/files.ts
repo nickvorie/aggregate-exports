@@ -7,10 +7,11 @@ export async function firstLine(file: string): Promise<string> {
 			highWaterMark: 1,
 		});
 
-		stream.on("error", reject);
-
 		const lineReader = readline.createInterface(stream);
 
+		stream.on("error", reject);
+		lineReader.on("error", reject);
+		
 		lineReader.on("line", (line) => {
 			stream.destroy();
 			lineReader.close();
@@ -18,6 +19,5 @@ export async function firstLine(file: string): Promise<string> {
 			resolve(line);
 		});
 
-		lineReader.on("error", reject);
 	});
 }
